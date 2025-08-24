@@ -37,7 +37,7 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-jar {
-    archiveFileName = "app.jar"
+tasks.named('jar') {
+    archiveFileName = 'app.jar'
 }
 
