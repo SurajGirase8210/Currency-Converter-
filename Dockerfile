@@ -1,20 +1,29 @@
+# Use JDK 17 for building the app
+FROM openjdk:17-jdk-slim AS build
+
+WORKDIR /app
+
+# Copy Gradle files
+COPY demo/build.gradle demo/settings.gradle demo/gradlew ./
+COPY demo/gradle ./gradle
+
+# Download dependencies
+RUN ./gradlew dependencies --no-daemon || true
+
+# Copy source code
+COPY demo/src ./src
+
+# Build the application
+RUN ./gradlew build --no-daemon
+
+# Run stage
 FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-# Copy Gradle files first
-COPY build.gradle settings.gradle gradlew ./
-COPY gradle ./gradle
+# Copy the built jar from build stage
+COPY --from=build /app/build/libs/*.jar app.jar
 
-# Download Gradle dependencies
-RUN ./gradlew dependencies --no-daemon || true
-
-# Copy source code
-COPY src ./src
-
-# Build the jar
-RUN ./gradlew build --no-daemon
-
-# Run the jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "build/libs/app.jar"]
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
