@@ -1,20 +1,16 @@
-# Use JDK 17 for building the app
+# Use JDK 17 for building
 FROM openjdk:17-jdk-slim AS build
 
 WORKDIR /app
 
-# Copy Gradle files
-COPY demo/build.gradle demo/settings.gradle demo/gradlew ./
-COPY demo/gradle ./gradle
+# Copy everything from repo root
+COPY . .
 
-# Download dependencies
-RUN ./gradlew dependencies --no-daemon || true
-
-# Copy source code
-COPY demo/src ./src
+# Make gradlew executable
+RUN chmod +x gradlew
 
 # Build the application
-RUN ./gradlew build --no-daemon
+RUN ./gradlew clean build --no-daemon -x test
 
 # Run stage
 FROM openjdk:17-jdk-slim
