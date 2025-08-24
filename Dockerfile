@@ -1,5 +1,20 @@
 FROM openjdk:17-jdk-slim
+
 WORKDIR /app
-COPY build/libs/app.jar app.jar
+
+# Copy Gradle files first
+COPY build.gradle settings.gradle gradlew ./
+COPY gradle ./gradle
+
+# Download Gradle dependencies
+RUN ./gradlew dependencies --no-daemon || true
+
+# Copy source code
+COPY src ./src
+
+# Build the jar
+RUN ./gradlew build --no-daemon
+
+# Run the jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "build/libs/app.jar"]
