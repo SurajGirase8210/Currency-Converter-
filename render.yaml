@@ -1,7 +1,10 @@
 services:
   - type: web
-    name: currency-service
+    name: currency-converter
     env: java
     plan: free
-    buildCommand: ./gradlew clean build
+    buildCommand: ./gradlew build -x test
     startCommand: java -jar build/libs/demo-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: JAVA_VERSION
+        value: 17
